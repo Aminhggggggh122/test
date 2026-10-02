@@ -1,0 +1,24 @@
+FROM alpine:latest
+
+RUN apk add --no-cache \
+        curl \
+        ca-certificates \
+        tzdata
+
+RUN set -eux; \
+    ARCH="$(uname -m)"; \
+    case "$ARCH" in \
+        x86_64)  ARCH="amd64" ;; \
+        aarch64) ARCH="arm64" ;; \
+    esac; \
+    curl -fL "https://github.com/mhsanaei/3x-ui/releases/latest/download/x-ui-linux-${ARCH}.tar.gz" \
+        -o /tmp/x-ui.tar.gz; \
+    mkdir -p /usr/local; \
+    tar -xzf /tmp/x-ui.tar.gz -C /usr/local; \
+    rm -f /tmp/x-ui.tar.gz
+
+WORKDIR /usr/local/x-ui
+
+EXPOSE 2053
+
+ENTRYPOINT ["./x-ui"]
